@@ -1,0 +1,35 @@
+{
+  "name": "nconf-encrypted",
+  "version": "1.0.0",
+  "description": "Ecryption wrapper around nconf",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fijimunkii/nconf-encrypted.git"
+  },
+  "keywords": [
+    "nconf",
+    "config",
+    "configuration",
+    "env",
+    "environment",
+    "argv",
+    "encrypt",
+    "decrypt",
+    "encrypted",
+    "secure",
+    "security"
+  ],
+  "author": "Harrison Powers",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fijimunkii/nconf-encrypted/issues"
+  },
+  "homepage": "https://github.com/fijimunkii/nconf-encrypted#readme",
+  "dependencies": {
+    "nconf": "^0.10.0"
+  }
+}
