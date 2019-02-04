@@ -1,0 +1,7 @@
+{
+  "configFileKeyA": "goodvalue",
+  "configFileKeyB": "goodvalue",
+  "configFileKeyC": {
+    "configFileKeySubKeyA": "goodvalue"
+  }
+}

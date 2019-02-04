@@ -4,7 +4,7 @@
   "description": "Ecryption wrapper around nconf",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./node_modules/.bin/tap test --jobs=10 --coverage-report=html --no-browser"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/fijimunkii/nconf-encrypted#readme",
   "dependencies": {
-    "nconf": "^0.10.0"
+    "nconf": "^0.10.0",
+    "tap": "^12.4.0"
   }
 }
