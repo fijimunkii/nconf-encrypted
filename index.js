@@ -61,6 +61,14 @@ module.exports = {
     nconf.required(encrypt(d));
     return module.exports;
   },
+  reset: () => {
+    Object.keys(nconf.stores).forEach(store => { delete nconf.stores[store]; });
+    return module.exports;
+  },
+  clear: key => {
+    nconf.clear(key);
+    return module.exports;
+  },
 //  save
 //  load
 };
