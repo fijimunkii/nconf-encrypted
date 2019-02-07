@@ -11,7 +11,7 @@ module.exports = {
     ENCRYPTION_KEY = d;
     return module.exports;
   },
-  get: key => key ? decrypt(nconf.get(encrypt(key, true))) : nconf.get(),
+  get: key => key ? parse(decrypt(nconf.get(encrypt(key, true)))) : nconf.get(),
   set: (key, value) => nconf.set(encrypt(key, true), encrypt(value)),
   env: options => {
     nconf.env(Object.assign({ transform }, options));
@@ -78,6 +78,22 @@ function transform(data) {
     key: encrypt(data.key, true),
     value: encrypt(data.value)
   };
+}
+
+function parse(value) {
+  if (typeof value === 'undefined') {
+    return;
+  } else if (Array.isArray(value)) {
+    return value.map(parse);
+  } else if (typeof d === 'object') {
+    return Object.keys(d).reduce((o,dd) => (o[dd]=parse(d[dd])) && o, {});
+  } else {
+    let val = value;
+    try {
+      val = JSON.parse(value);
+    } catch (err) { }
+    return val;
+  }
 }
 
 function encrypt(d, isKey) {

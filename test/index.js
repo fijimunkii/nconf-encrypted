@@ -76,6 +76,11 @@ module.exports = t => {
     const val = nconf.get(stringKey);
     t.strictSame(val, nestedObject[stringKey]);
   });
+  t.test('datatypes - number', async (t) => {
+    nconf.use('number', { type: 'literal', store: { goodkey: [1,2] } });
+    const val = nconf.get(stringKey);
+    t.strictSame(val, [1,2]);
+  });
 };
 
 if (!module.parent) module.exports(require('tap'));
