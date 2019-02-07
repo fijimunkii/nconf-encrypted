@@ -1,9 +1,9 @@
 const nconf = require('../index');
-nconf.setEncryptionKey("ECEA347837320EE03C67C4215F2D991F");
+const crypto = require('crypto');
 
+const configFile = require('path').join(__dirname,'config.json');
 const stringVal = 'goodvalue';
 const stringKey = 'goodkey';
-const configFile = require('path').join(__dirname,'config.json');
 
 module.exports = t => {
   t.beforeEach(done => {
@@ -30,6 +30,11 @@ module.exports = t => {
     nconf.env();
     const val = nconf.get(stringKey);
     t.same(val, stringVal);
+  });
+  t.test('encryption key - must be 256 bits (32 characters)', async (t) => {
+    t.throws(() => nconf.setEncryptionKey('tooshort'));
+    const validKey = crypto.randomBytes(16).toString('hex');
+    t.doesNotThrow(() => nconf.setEncryptionKey(validKey));
   });
   t.test('encryption - keys are not stored in plaintext', async (t) => {
     nconf.use('encrypted', { type: 'literal', store: { goodkey: stringVal } });

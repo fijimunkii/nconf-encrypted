@@ -1,14 +1,14 @@
 const fs = require('fs');
 const nconf = require('nconf');
 const crypto = require('crypto');
-let ENCRYPTION_KEY; // Must be 256 bits (32 characters)
 const IV_LENGTH = 16; // For AES, this is always 16
 const KEY_IV = crypto.randomBytes(IV_LENGTH); // Key lookup requires static iv
+let ENCRYPTION_KEY = crypto.randomBytes(IV_LENGTH).toString('hex'); // Must be 256 bits (32 characters)
 
 module.exports = {
   setEncryptionKey: d => {
+    validateEncryptionKey(d);
     ENCRYPTION_KEY = d;
-    validateEncryptionKey();
     return module.exports;
   },
   get: key => key ? decrypt(nconf.get(encrypt(key, true))) : nconf.get(),
@@ -89,9 +89,10 @@ function encrypt(d, isKey) {
   } else if (typeof d === 'object') {
     return Object.keys(d).reduce((o,dd) => (o[encrypt(dd,true)]=encrypt(d[dd])) && o, {});
   } else {
-    let iv = isKey ? KEY_IV : crypto.randomBytes(IV_LENGTH);
-    let cipher = crypto.createCipheriv('aes-256-cbc', new Buffer.from(ENCRYPTION_KEY), iv);
-    let encrypted = cipher.update(d);
+    const data = String(d);
+    const iv = isKey ? KEY_IV : crypto.randomBytes(IV_LENGTH);
+    const cipher = crypto.createCipheriv('aes-256-cbc', new Buffer.from(ENCRYPTION_KEY), iv);
+    let encrypted = cipher.update(data);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
     return iv.toString('hex') + '|' + encrypted.toString('hex');
   }
@@ -105,19 +106,20 @@ function decrypt(d) {
   } else if (typeof d === 'object') {
     return Object.keys(d).reduce((o,dd) => (o[decrypt(dd)]=decrypt(d[dd])) && o, {});
   } else {
-    let textParts = d.split('|');
-    let iv = new Buffer.from(textParts.shift(), 'hex');
-    let encryptedText = new Buffer.from(textParts.join('|'), 'hex');
-    let decipher = crypto.createDecipheriv('aes-256-cbc', new Buffer.from(ENCRYPTION_KEY), iv);
+    const textParts = d.split('|');
+    const iv = new Buffer.from(textParts.shift(), 'hex');
+    const encryptedText = new Buffer.from(textParts.join('|'), 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-cbc', new Buffer.from(ENCRYPTION_KEY), iv);
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
   }
 }
-function validateEncryptionKey() {
-  if (typeof ENCRYPTION_KEY === 'undefined') {
+function validateEncryptionKey(d) {
+  const key = d || ENCRYPTION_KEY;
+  if (typeof key === 'undefined') {
     throw new Error('Encryption Key must be set - nconf.setEncryptionKey()');
-  } else if (ENCRYPTION_KEY.length !== 32) {
+  } else if (key.length !== 32) {
     throw new Error('Encryption Key must be 256 bits (32 characters)');
   }
 }
