@@ -1,6 +1,6 @@
 {
   "name": "nconf-encrypted",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ecryption wrapper around nconf",
   "main": "index.js",
   "scripts": {
