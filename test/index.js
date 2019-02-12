@@ -59,22 +59,22 @@ module.exports = t => {
     t.equal(store, undefined);
   });
   t.test('datatypes - string', async (t) => {
-    nconf.use('string', { type: 'literal', store: { goodkey: stringVal } });
+    const store = { goodkey: stringVal };
+    nconf.use('string', { type: 'literal', store });
     const val = nconf.get(stringKey);
-    t.equal(val, stringVal);
+    t.equal(val, store[stringKey]);
   });
   t.test('datatypes - array', async (t) => {
-    nconf.use('string', { type: 'literal', store: { goodkey: [stringVal,stringVal] } });
+    const store = { goodkey: [stringVal,stringVal] };
+    nconf.use('string', { type: 'literal', store });
     const val = nconf.get(stringKey);
-    t.strictSame(val, [stringVal,stringVal]);
+    t.strictSame(val, store[stringKey]);
   });
   t.test('datatypes - nested object', async (t) => {
-    const nestedObject = {
-      goodkey: { goodkey: { goodkey: { goodkey: [stringVal,stringVal] } } }
-    };
-    nconf.use('string', { type: 'literal', store: nestedObject });
+    const store = { goodkey: { goodkey: { goodkey: [stringVal,stringVal] } } };
+    nconf.use('string', { type: 'literal', store });
     const val = nconf.get(stringKey);
-    t.strictSame(val, nestedObject[stringKey]);
+    t.strictSame(val, store[stringKey]);
   });
 };
 
