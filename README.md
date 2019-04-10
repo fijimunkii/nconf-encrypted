@@ -9,7 +9,6 @@ Encrypted wrapper around nconf.
 const nconf = require('nconf-encrypted');
 
 nconf
-  .setEncryptionKey(`32CharacterString`)
   .argv()
   .env()
   .use('someConfigFile', { type: 'file', file: '/path/to/config.json' })
@@ -17,9 +16,13 @@ nconf
 
 // retrieve value
 nconf.get('a'); // 'OK'
+nconf.get('b'); // true
 
 // view all stores (note all keys and values are now encrypted)
 nconf.get();
+
+// optionally bring your own encryption key
+nconf.setEncryptionKey(`32CharacterString`);
 
 // Extra trick to prevent rogue modules from leaking / dumping environment variables
 process.argv = [];

@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const configFile = require('path').join(__dirname,'config.json');
 const stringVal = 'goodvalue';
 const stringKey = 'goodkey';
+const numberVal = 555;
+const booleanVal = true;
 
 module.exports = t => {
   t.beforeEach(done => {
@@ -60,6 +62,18 @@ module.exports = t => {
   });
   t.test('datatypes - string', async (t) => {
     const store = { goodkey: stringVal };
+    nconf.use('string', { type: 'literal', store });
+    const val = nconf.get(stringKey);
+    t.equal(val, store[stringKey]);
+  });
+  t.test('datatypes - number', async (t) => {
+    const store = { goodkey: numberVal };
+    nconf.use('string', { type: 'literal', store });
+    const val = nconf.get(stringKey);
+    t.equal(val, store[stringKey]);
+  });
+  t.test('datatypes - boolean', async (t) => {
+    const store = { goodkey: booleanVal };
     nconf.use('string', { type: 'literal', store });
     const val = nconf.get(stringKey);
     t.equal(val, store[stringKey]);
