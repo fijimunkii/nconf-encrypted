@@ -107,10 +107,8 @@ function encrypt(d, isKey) {
     const data = String(d);
     const datatype = DATA_TYPE_LOOKUP[typeof d] || 0;
     const iv = isKey ? KEY_IV : crypto.randomBytes(IV_LENGTH);
-    const cipher = crypto.createCipheriv(algorithm, new Buffer.from(ENCRYPTION_KEY), iv);
-    let encrypted = cipher.update(data);
-    encrypted = Buffer.concat([encrypted, cipher.final()]);
-    return String(datatype) + iv.toString('hex') + '|' + encrypted.toString('hex');
+    const cipher = crypto.createCipheriv(algorithm, ENCRYPTION_KEY, iv);
+    return String(datatype) + iv.toString('hex') + cipher.update(data,'utf8','hex') + cipher.final('hex');
   }
 }
 function decrypt(d) {
@@ -124,12 +122,10 @@ function decrypt(d) {
   } else {
     const datatype = DATA_TYPES[d.substring(0,1)];
     d = d.substring(1, d.length);
-    const textParts = d.split('|');
-    const iv = new Buffer.from(textParts.shift(), 'hex');
-    const encryptedText = new Buffer.from(textParts.join('|'), 'hex');
-    const decipher = crypto.createDecipheriv(algorithm, new Buffer.from(ENCRYPTION_KEY), iv);
-    let decrypted = decipher.update(encryptedText);
-    decrypted = Buffer.concat([decrypted, decipher.final()]).toString();
+    const iv = Buffer.from(d.slice(0,IV_LENGTH*2), 'hex');
+    const encrypted = d.slice(IV_LENGTH*2);
+    const decipher = crypto.createDecipheriv(algorithm, ENCRYPTION_KEY, iv);
+    const decrypted = decipher.update(encrypted,'hex','utf8') + decipher.final('utf8');
     return datatype(decrypted);
   }
 }
