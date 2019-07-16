@@ -1,6 +1,7 @@
 const fs = require('fs');
 const nconf = require('nconf');
 const crypto = require('crypto');
+const algorithm = 'aes-256-ctr';
 // TODO preserve null
 const DATA_TYPES = [ String, Number, Boolean ];
 const DATA_TYPE_LOOKUP = DATA_TYPES.reduce((o,d,i) => { o[d.name.toLowerCase()] = i; return o; }, {});
@@ -106,7 +107,7 @@ function encrypt(d, isKey) {
     const data = String(d);
     const datatype = DATA_TYPE_LOOKUP[typeof d] || 0;
     const iv = isKey ? KEY_IV : crypto.randomBytes(IV_LENGTH);
-    const cipher = crypto.createCipheriv('aes-256-cbc', new Buffer.from(ENCRYPTION_KEY), iv);
+    const cipher = crypto.createCipheriv(algorithm, new Buffer.from(ENCRYPTION_KEY), iv);
     let encrypted = cipher.update(data);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
     return String(datatype) + iv.toString('hex') + '|' + encrypted.toString('hex');
@@ -126,7 +127,7 @@ function decrypt(d) {
     const textParts = d.split('|');
     const iv = new Buffer.from(textParts.shift(), 'hex');
     const encryptedText = new Buffer.from(textParts.join('|'), 'hex');
-    const decipher = crypto.createDecipheriv('aes-256-cbc', new Buffer.from(ENCRYPTION_KEY), iv);
+    const decipher = crypto.createDecipheriv(algorithm, new Buffer.from(ENCRYPTION_KEY), iv);
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]).toString();
     return datatype(decrypted);
